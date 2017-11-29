@@ -337,14 +337,10 @@ Response_header::Response_header(Verification_level lev, const std::string& to_p
     code_ = 0;
   }
 
-  if (resp_line.size() > 2) {
-    phrase_ = boost::join(
-        boost::make_iterator_range(std::next(resp_line.begin(), 2), resp_line.end()),
-        std::string(" ")
-    );
-    //phrase_ = resp_line[2];
-  }
-
+  phrase_ = boost::join(
+      boost::make_iterator_range(resp_line.begin() + 2, resp_line.end()),
+      std::string(" ")
+  );
 }
 
 Response_header::Response_header( int c, const std::string& p ):
