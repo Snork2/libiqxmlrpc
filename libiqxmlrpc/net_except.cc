@@ -30,7 +30,14 @@ exception_message(const std::string& prefix, bool use_errno, int myerrno)
 #elif !defined _WIN32
     strerror_r( myerrno, buf, sizeof(buf) - 1 );
 #else
-    strerror_s( buf, sizeof(buf) - 1, WSAGetLastError() );
+
+    FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,   // flags
+                   NULL,                // lpsource
+                   WSAGetLastError(),   // message id
+                   MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),    // languageid
+                   b,                   // output buffer
+                   sizeof (buf),        // size of msgbuf, bytes
+                   NULL);               // va_list of arguments
 #endif
 
     retval += std::string(b);
