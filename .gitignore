@@ -25,3 +25,7 @@ tests/cmake_install.cmake
 tests/parser-test
 tests/server-test
 tests/value-test
+build/
+.settings/
+.cproject
+.project

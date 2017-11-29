@@ -12,6 +12,7 @@ namespace iqxmlrpc {
 class ValueBuilderBase: public BuilderBase {
 public:
   ValueBuilderBase(Parser& parser, bool expect_text = false);
+  virtual ~ValueBuilderBase() = default;
 
   Value_type*
   result()

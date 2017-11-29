@@ -11,7 +11,7 @@
 #include "client_common.h"
 #include "client_opts.h"
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <winsock2.h>
 #endif
 
@@ -26,7 +26,7 @@ class ClientFixture {
 public:
   ClientFixture()
   {
-#if defined(WIN32)
+#if defined(_WIN32)
     WORD wVersionRequested;
     WSADATA wsaData;
     wVersionRequested = MAKEWORD(2, 2);
@@ -61,14 +61,14 @@ BOOST_AUTO_TEST_CASE( auth_test )
 {
   BOOST_REQUIRE(test_client);
 
-  BOOST_CHECKPOINT("Successful authorization");
+  BOOST_TEST_CHECKPOINT("Successful authorization");
   test_client->set_authinfo("goodman", "loooooooooooooooooongpaaaaaaaaaaaassssswwwwwwoooooord");
   Response retval( test_client->execute("echo_user", 0) );
   BOOST_CHECK( !retval.is_fault() );
   BOOST_CHECK_EQUAL( retval.value().get_string(), "goodman" );
 
   try {
-    BOOST_CHECKPOINT("Unsuccessful authorization");
+    BOOST_TEST_CHECKPOINT("Unsuccessful authorization");
     test_client->set_authinfo("badman", "");
     retval = test_client->execute("echo_user", 0);
 

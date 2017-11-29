@@ -11,7 +11,7 @@
 #include "client_common.h"
 #include "client_opts.h"
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <winsock2.h>
 #endif
 
@@ -45,7 +45,7 @@ class ClientFixture {
 public:
   ClientFixture()
   {
-#if defined(WIN32)
+#if defined(_WIN32)
     WORD wVersionRequested;
     WSADATA wsaData;
     wVersionRequested = MAKEWORD(2, 2);

@@ -1,21 +1,31 @@
+option(WITH_HTTPS "Include HTTPS client and server. Requires openssl" OFF)
+
 include(FindBoost)
 include(FindLibXml2)
-include(FindOpenSSL)
+include(FindZLIB)
+include(FindLibLZMA)
 include(CheckFunctionExists)
 
+if (WITH_HTTPS)
+	include(FindOpenSSL)
+endif()
+
+
 find_package(Boost 1.41.0 COMPONENTS date_time thread system REQUIRED)
-include_directories(${Boost_INCLUDE_DIR} ${XML2_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIR} ${PROJECT_BINARY_DIR}/libiqxmlrpc)
+
 
 check_function_exists(poll HAVE_POLL)
 if(${HAVE_POLL})
-	set(REACTOR_IMPL "poll")
+  set(REACTOR_IMPL "poll")
 else(${HAVE_POLL})
-	set(REACTOR_IMPL "select")
+  set(REACTOR_IMPL "select")
 endif(${HAVE_POLL})
 message("iqxmlrpc: Using ${REACTOR_IMPL} reactor implementation")
 
+
 configure_file(config.h.in config.h)
 configure_file(version.h.in version.h)
+
 
 set(PUBLIC_HEADERS
   acceptor.h
@@ -36,8 +46,6 @@ set(PUBLIC_HEADERS
   http_errors.h
   http_client.h
   http_server.h
-  https_client.h
-  https_server.h
   inet_addr.h
   libiqxmlrpc.h
   lock.h
@@ -50,8 +58,6 @@ set(PUBLIC_HEADERS
   server_conn.h
   server.h
   socket.h
-  ssl_lib.h
-  ssl_connection.h
   sysinc.h
   util.h
   value_type.h
@@ -59,6 +65,7 @@ set(PUBLIC_HEADERS
   value_type_visitor.h
   value.h
 )
+
 
 set(PRIVATE_HEADERS
   parser2.h
@@ -72,9 +79,8 @@ set(PRIVATE_HEADERS
   xml_builder.h
 )
 
-add_library(iqxmlrpc SHARED
-  ${PUBLIC_HEADERS}
-  ${PRIVATE_HEADERS}
+
+set(SOURCES 
   acceptor.cc
   auth_plugin.cc
   builtins.cc
@@ -86,9 +92,7 @@ add_library(iqxmlrpc SHARED
   executor.cc
   http.cc
   http_client.cc
-  https_client.cc
   http_server.cc
-  https_server.cc
   inet_addr.cc
   method.cc
   net_except.cc
@@ -102,8 +106,6 @@ add_library(iqxmlrpc SHARED
   server.cc
   server_conn.cc
   socket.cc
-  ssl_connection.cc
-  ssl_lib.cc
   value.cc
   value_parser.cc
   value_type.cc
@@ -112,25 +114,95 @@ add_library(iqxmlrpc SHARED
   xml_builder.cc
 )
 
+
+set(INCLUDE_LIBRARIES
+  ${Boost_INCLUDE_DIR}
+  ${ZLIB_INCLUDE_DIRS}
+  ${LIBLZMA_INCLUDE_DIRS}
+  ${LIBXML2_INCLUDE_DIR} 
+  ${PROJECT_BINARY_DIR}/libiqxmlrpc
+)
+
+
+set(LINK_LIBRARIES 
+  ${Boost_LIBRARIES}
+  ${ZLIB_LIBRARIES}
+  ${LIBLZMA_LIBRARIES}
+  ${LIBXML2_LIBRARIES}
+)
+
+
+if (INCLUDE_HTTPS)
+  LIST(APPEND SOURCES 
+    https_client.cc
+    https_server.cc
+    ssl_connection.cc
+    ssl_lib.cc
+  )
+  
+  
+  LIST(APPEND PUBLIC_HEADERS
+    https_client.h
+    https_server.h
+    ssl_lib.h
+    ssl_connection.h
+  )
+  
+  LIST(APPEND LINK_LIBRARIES
+    ${OPENSSL_LIBRARIES}
+  )
+  
+  LIST(APPEND INCLUDE_LIBRARIES
+    ${OPENSSL_INCLUDE_DIR}
+  )
+
+endif()
+
+
+add_library(iqxmlrpc SHARED
+  ${PUBLIC_HEADERS}
+  ${PRIVATE_HEADERS}
+  ${SOURCES}
+)
+
+
+add_library(libiqxmlrpc STATIC
+  ${PUBLIC_HEADERS}
+  ${PRIVATE_HEADERS}
+  ${SOURCES}
+)
+
+
 if(WIN32)
 	add_definitions(-DLIBIQXMLRPC_COMPILATION -DDLL_EXPORT)
+	add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+	add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
 	target_link_libraries(iqxmlrpc Ws2_32.lib)
 else()
 	add_definitions(-Wall -Wextra)
 endif()
 
-target_link_libraries(iqxmlrpc
-  ${Boost_LIBRARIES}
-  ${XML2_LIBRARIES} # obsolete
-  ${LIBXML2_LIBRARIES}
-  ${OPENSSL_LIBRARIES}
+
+include_directories(
+  ${INCLUDE_LIBRARIES}
 )
+
+
+target_link_libraries(iqxmlrpc
+  ${LINK_LIBRARIES}
+)
+
 
 string(REPLACE ";" " " PC_BOOST_LIBRARIES "${Boost_LIBRARIES}")
 string(REPLACE ";" " " PC_OPENSSL_LDFLAGS "${OPENSSL_LDFLAGS}")
 configure_file(../libiqxmlrpc.pc.in libiqxmlrpc.pc @ONLY)
 
-install(TARGETS iqxmlrpc DESTINATION lib)
+install(TARGETS iqxmlrpc libiqxmlrpc 
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+)
+
 install(FILES ${PUBLIC_HEADERS} DESTINATION include/libiqxmlrpc)
 if (UNIX)
 	install(FILES ${CMAKE_BINARY_DIR}/libiqxmlrpc/libiqxmlrpc.pc DESTINATION lib/pkgconfig)

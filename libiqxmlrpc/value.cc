@@ -16,11 +16,11 @@ Value::Bad_cast::Bad_cast():
 
 
 namespace ValueOptions {
-  boost::optional<int> default_int;
-  bool omit_string_tag_in_responses = false;
+  static boost::optional<int32_t> default_int;
+  static bool omit_string_tag_in_responses = false;
 }
 
-void Value::set_default_int(int dint)
+void Value::set_default_int(int32_t dint)
 {
   ValueOptions::default_int = dint;
 }
@@ -28,6 +28,11 @@ void Value::set_default_int(int dint)
 Int* Value::get_default_int()
 {
   return ValueOptions::default_int ? new Int(*ValueOptions::default_int) : 0;
+}
+
+Int8* Value::get_default_int8()
+{
+  return ValueOptions::default_int ? new Int8((int64_t)*ValueOptions::default_int) : 0;
 }
 
 void Value::drop_default_int()
@@ -60,8 +65,13 @@ Value::Value( Nil n ):
 {
 }
 
-Value::Value( int i ):
+Value::Value( int32_t i ):
   value( new Int(i) )
+{
+}
+
+Value::Value( int64_t i ):
+  value( new Int8(i) )
 {
 }
 
@@ -187,9 +197,14 @@ const std::string& Value::type_name() const
   return value->type_name();
 }
 
-int Value::get_int() const
+int32_t Value::get_int() const
 {
   return cast<Int>()->value();
+}
+
+int64_t Value::get_int8() const
+{
+  return cast<Int8>()->value();
 }
 
 bool Value::get_bool() const
@@ -217,7 +232,12 @@ Date_time Value::get_datetime() const
   return Date_time(*cast<Date_time>());
 }
 
-Value::operator int() const
+Value::operator int32_t() const
+{
+  return get_int();
+}
+
+Value::operator int64_t() const
 {
   return get_int();
 }

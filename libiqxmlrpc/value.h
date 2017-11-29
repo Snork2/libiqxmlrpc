@@ -32,7 +32,8 @@ public:
   Value( Value_type* );
   Value( const Value& );
   Value( Nil );
-  Value( int );
+  Value( int32_t );
+  Value( int64_t );
   Value( bool );
   Value( double );
   Value( std::string );
@@ -64,14 +65,16 @@ public:
 
   //! \name Access scalar value
   //! \{
-  int         get_int()    const;
+  int32_t     get_int()    const;
+  int64_t     get_int8()   const;
   bool        get_bool()   const;
   double      get_double() const;
   std::string get_string() const;
   Binary_data get_binary() const;
   Date_time   get_datetime() const;
 
-  operator int()         const;
+  operator int32_t()     const;
+  operator int64_t()     const;
   operator bool()        const;
   operator double()      const;
   operator std::string() const;
@@ -113,8 +116,9 @@ public:
 
   void apply_visitor(Value_type_visitor&) const;
 
-  static void set_default_int(int);
+  static void set_default_int(int32_t);
   static Int* get_default_int();
+  static Int8* get_default_int8();
   static void drop_default_int();
 
   static void omit_string_tag_in_responses(bool);

@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 2.8)
 project(Libiqxmlrpc)
 set(Libiqxmlrpc_VERSION 0.13.5)
 
+# find_package(Boost) call works only first time. So we need to prepare list in advance
+#set(TARGET_BOOST_LIBS)
+#find_package(Boost 1.41.0 COMPONENTS unit_test_framework program_options thread )
+
+set(CMAKE_DEBUG_POSTFIX _d)
+
 add_subdirectory(libiqxmlrpc)
 
 option(build_tests "Build tests?" OFF)

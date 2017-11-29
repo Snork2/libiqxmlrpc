@@ -1,7 +1,7 @@
 //  Libiqxmlrpc - an object-oriented XML-RPC solution.
 //  Copyright (C) 2011 Anton Dedov
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <winsock2.h>
 #endif
 
@@ -15,11 +15,13 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/once.hpp>
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <pthread.h>
 #endif
 
 #include <sstream>
+#include <iomanip>
+
 #include "ssl_lib.h"
 #include "net_except.h"
 
@@ -188,7 +190,8 @@ struct Ctx::Impl {
   Impl():
     server_verifier(0),
     client_verifier(0),
-    require_client_cert(false)
+    require_client_cert(false),
+    ctx(NULL)
   {
   }
 };

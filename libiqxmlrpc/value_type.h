@@ -27,7 +27,8 @@ class Value_type_visitor;
 typedef util::ExplicitPtr<Value*> Value_ptr;
 
 template <class T> class Scalar;
-typedef Scalar<int> Int;
+typedef Scalar<int32_t> Int;
+typedef Scalar<int64_t> Int8;
 typedef Scalar<bool> Bool;
 typedef Scalar<double> Double;
 typedef Scalar<std::string> String;

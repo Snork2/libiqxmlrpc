@@ -12,7 +12,7 @@ namespace iqnet
 //! Relatively portable socket class.
 class LIBIQXMLRPC_API Socket {
 public:
-#ifdef _WINDOWS
+#ifdef _WIN32
   typedef SOCKET Handler;
 #else
   typedef int Handler;

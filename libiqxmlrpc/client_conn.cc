@@ -8,7 +8,7 @@
 namespace iqxmlrpc {
 
 Client_connection::Client_connection():
-  read_buf_(65536, '\0')
+  read_buf_(65536, '\0'), options(NULL)
 {
 }
 

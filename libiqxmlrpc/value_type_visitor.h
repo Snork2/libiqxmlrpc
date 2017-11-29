@@ -28,9 +28,14 @@ public:
     do_visit_nil();
   }
 
-  void visit_int(int i)
+  void visit_int(int32_t i)
   {
     do_visit_int(i);
+  }
+
+  void visit_int8(int64_t i)
+  {
+    do_visit_int8(i);
   }
 
   void visit_double(double d)
@@ -72,7 +77,8 @@ private:
   virtual void do_visit_value(const Value_type&) = 0;
 
   virtual void do_visit_nil() = 0;
-  virtual void do_visit_int(int) = 0;
+  virtual void do_visit_int(int32_t) = 0;
+  virtual void do_visit_int8(int64_t) = 0;
   virtual void do_visit_double(double) = 0;
   virtual void do_visit_bool(bool) = 0;
   virtual void do_visit_string(const std::string&) = 0;
@@ -91,7 +97,8 @@ public:
 private:
   virtual void do_visit_value(const Value_type&);
   virtual void do_visit_nil();
-  virtual void do_visit_int(int);
+  virtual void do_visit_int(int32_t);
+  virtual void do_visit_int8(int64_t);
   virtual void do_visit_double(double);
   virtual void do_visit_bool(bool);
   virtual void do_visit_string(const std::string&);

@@ -24,7 +24,12 @@ void Print_value_visitor::do_visit_nil()
   out_ << "NIL";
 }
 
-void Print_value_visitor::do_visit_int(int val)
+void Print_value_visitor::do_visit_int(int32_t val)
+{
+  out_ << val;
+}
+
+void Print_value_visitor::do_visit_int8(int64_t val)
 {
   out_ << val;
 }

@@ -97,7 +97,7 @@ void stop_test_server_st()
 
 void stop_test_server_mt(unsigned fnum)
 {
-  BOOST_CHECKPOINT(fnum);
+  BOOST_TEST_CHECKPOINT(fnum);
   stop_test_server(16);
 }
 

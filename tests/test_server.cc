@@ -12,7 +12,7 @@
 #include "server_config.h"
 #include "methods.h"
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <winsock2.h>
 #endif
 
@@ -128,7 +128,7 @@ void test_server_sig_handler(int)
 int
 main(int argc, const char** argv)
 {
-#if defined(WIN32)
+#if defined(_WIN32)
   WORD wVersionRequested;
   WSADATA wsaData;
   wVersionRequested = MAKEWORD(2, 2);

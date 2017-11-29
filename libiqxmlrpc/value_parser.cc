@@ -126,6 +126,7 @@ enum ValueBuilderState {
   VALUE,
   STRING,
   INT,
+  INT8,
   BOOL,
   DOUBLE,
   BINARY,
@@ -143,6 +144,7 @@ ValueBuilder::ValueBuilder(Parser& parser):
     { VALUE,  STRING, "string" },
     { VALUE,  INT,    "int" },
     { VALUE,  INT,    "i4" },
+    { VALUE,  INT8,   "i8" },
     { VALUE,  BOOL,   "boolean" },
     { VALUE,  DOUBLE, "double" },
     { VALUE,  BINARY, "base64" },
@@ -186,8 +188,6 @@ ValueBuilder::do_visit_element_end(const std::string&)
   if (retval.get())
     return;
 
-  std::auto_ptr<Int> default_int(Value::get_default_int());
-
   switch (state_.get_state()) {
   case VALUE:
   case STRING:
@@ -195,11 +195,24 @@ ValueBuilder::do_visit_element_end(const std::string&)
     break;
 
   case INT:
+  {
+    std::auto_ptr<Int> default_int(Value::get_default_int());
     if (default_int.get()) {
       retval.reset(default_int.release());
       break;
     }
     throw XML_RPC_violation(parser_.context());
+  }
+
+  case INT8:
+  {
+    std::auto_ptr<Int8> default_int(Value::get_default_int8());
+    if (default_int.get()) {
+      retval.reset(default_int.release());
+      break;
+    }
+    throw XML_RPC_violation(parser_.context());
+  }
 
   case BINARY:
     retval.reset(Binary_data::from_data(""));
@@ -218,12 +231,17 @@ ValueBuilder::do_visit_text(const std::string& text)
   switch (state_.get_state()) {
   case VALUE:
     want_exit();
+    /* no break */ // Vasilly.Prokopyev: very suspicious
   case STRING:
     retval.reset(new String(text));
     break;
 
   case INT:
-    retval.reset(new Int(lexical_cast<int>(text)));
+    retval.reset(new Int(lexical_cast<int32_t>(text)));
+    break;
+
+  case INT8:
+    retval.reset(new Int8(lexical_cast<int64_t>(text)));
     break;
 
   case BOOL:

@@ -188,7 +188,8 @@ public:
     constructed(false),
     pkt_max_sz(0),
     total_sz(0),
-    continue_sent_(false)
+    continue_sent_(false),
+    ver_level_(HTTP_CHECK_WEAK)
   {
   }
 
