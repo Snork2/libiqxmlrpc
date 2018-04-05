@@ -169,10 +169,6 @@ ValueBuilder::do_visit_element(const std::string& tagname)
     retval.reset(sub_build<Value_type*, ArrayBuilder>(true));
     break;
 
-  case NIL:
-    retval.reset(new Nil());
-    break;
-
   default:
     // wait for text within <i4>...</i4>, etc...
     break;
@@ -192,6 +188,10 @@ ValueBuilder::do_visit_element_end(const std::string&)
   case VALUE:
   case STRING:
     retval.reset(new String(""));
+    break;
+
+  case NIL:
+    retval.reset(new Nil());
     break;
 
   case INT:
